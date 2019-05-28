@@ -1,4 +1,11 @@
-(in-package :majere)
+(uiop:define-package :majere/src/races/dwarf
+    (:use #:cl)
+  (:import-from #:majere/src/races/race #:define-race)
+  ;; You can't be just a dwarf so you aren't allowed to make just a dwarf
+  (:export #:dwarf))
+
+(in-package :majere/src/races/dwarf)
+
 
 (define-race dwarf ()
              (:size :medium)
@@ -6,7 +13,7 @@
              (:languages (:common
                           :dwarvish))
              ;; (behaviour destination)
-             (:alignment (lawful good))
+             (:alignment (:lawful :good))
              ;; Should take either the long or short name for the bonuses
              ;; ALIST (stat bonus)
              (:bonuses (:constitution 2))

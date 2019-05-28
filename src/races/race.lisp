@@ -1,9 +1,19 @@
 ;; Defines the top level class for D&D playable races
-(in-package :majere)
+(uiop:define-package :majere/src/races/race
+    (:use #:cl
+          #:majere/src/types)
+  (:nicknames :majere-race)
+  (:export #:majere-race
+           #:define-race))
 
-(defvar +default-race-speed+ 30)
-(defvar +default-race-size+ :medium)
-(defvar +default-race-alignment+ '(neutral neutral))
+(in-package :majere/src/races/race)
+
+(defvar +default-race-speed+ 30
+  "Most common default move speed for races")
+(defvar +default-race-size+ :medium
+  "Most common default size for races")
+(defvar +default-race-alignment+ '(:neutral :neutral)
+  "An arbitrary default alignment")
 
 (defclass majere-race ()
   ((%bonuses :initarg :bonuses
@@ -93,7 +103,7 @@ TODO: Fill in event generics"
                               spec-element
                               parent-element)))
              ;; TODO: Find a better way to do this
-             (if (typep spec-element 'alignment)
+             (if (listp spec-element)
                  ;; If we're already quoted don't double quote
                  (if (and (listp element) (eq (first element) 'quote))
                      element

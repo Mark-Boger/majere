@@ -1,8 +1,15 @@
-(in-package :majere)
+(uiop:define-package :majere/src/races/drow
+    (:use #:cl)
+  (:import-from #:majere/src/races/race #:define-race)
+  (:import-from #:majere/src/races/elf #:elf)
+  (:export #:drow
+           #:make-drow))
+
+(in-package :majere/src/races/drow)
 
 (define-race drow (elf)
              (:bonuses (:charisma 1))
-             (:alignment (chaotic evil))
+             (:alignment (:chaotic :evil))
              (:traits (:superior-darkvision
                        :sunlight-sensitivity))
              (:spells ((:dancing-lights 1 :charisma)

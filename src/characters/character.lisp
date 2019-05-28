@@ -1,5 +1,10 @@
 ;; Anything that has to do with a characters goes in here
-(in-package #:majere)
+
+(uiop:define-package :majere/src/characters/character
+    (:use #:cl)
+  (:export #:majere-character))
+
+(in-package :majere/src/characters/character)
 
 (defclass majere-character ()
   ((%name :initarg :name

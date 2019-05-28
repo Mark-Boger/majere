@@ -1,4 +1,8 @@
-(in-package :majere)
+(uiop:define-package :majere/src/classes/class
+    (:use #:cl)
+  (:export #:majere-class))
+
+(in-package :majere/src/classes/class)
 
 (defclass majere-class ()
   ((%name :initarg :name

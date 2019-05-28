@@ -1,13 +1,27 @@
-(in-package :majere)
+(uiop:define-package :majere/src/types
+    (:use #:cl)
+  (:export #:good
+           #:neutral
+           #:evil
+           #:lawful
+           #:chaotic
+           #:alignment
+           #:size
+           #:throw-modifier))
 
-(defvar +morality+ '(good neutral evil))
-(defvar +order+ '(lawful neutral chaotic))
+(in-package :majere/src/types)
+
+(defvar +morality+ '(:good :neutral :evil))
+
+(defvar +order+ '(:lawful :neutral :chaotic))
+
 (defvar +sizes+ '(:tiny
                   :small
                   :medium
                   :large
                   :huge
                   :gargantuan))
+
 (defvar +throw-modifiers+ '(:advantage
                             :disadvantage
                             :immune))
