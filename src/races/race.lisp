@@ -93,12 +93,11 @@ TODO: Fill in event generics"
                               spec-element
                               parent-element)))
              ;; TODO: Find a better way to do this
-             (if (eq type 'alignment)
-                 `',element
+             (if (typep spec-element 'alignment)
                  ;; If we're already quoted don't double quote
-                 ;; (if (and (listp element) (eq (first element) 'quote))
-                 ;;     element
-                 ;;     `',element)
+                 (if (and (listp element) (eq (first element) 'quote))
+                     element
+                     `',element)
                  element)))
          ;; TODO: Fix so that it actually checks that things are alists.
          ;; Honestly this doesn't really make sure that things are alists so use
