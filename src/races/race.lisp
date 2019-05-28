@@ -4,35 +4,6 @@
 (defvar +default-race-speed+ 30)
 (defvar +default-race-size+ :medium)
 (defvar +default-race-alignment+ '(neutral neutral))
-(defvar +morality+ '(good neutral evil))
-(defvar +order+ '(lawful neutral chaos))
-(defvar +sizes+ '(:tiny
-                  :small
-                  :medium
-                  :large
-                  :huge
-                  :gargantuan))
-(defvar +throw-modifiers+ '(:advantage
-                            :disadvantage
-                            :immune))
-
-(defmacro define-majere-type (type-name (pass) &body body)
-  (let ((predicate (alexandria:symbolicate type-name '-p)))
-    `(progn
-       (defun ,predicate (,pass)
-         ,@body)
-       (deftype ,type-name ()
-         (let ((predicate  ',predicate))
-           `(satisfies ,predicate))))))
-
-(define-majere-type alignment (a)
-  (and (member (car a) +order+) (member (cadr a) +morality+)))
-
-(define-majere-type size (a)
-  (member a +sizes+))
-
-(define-majere-type throw-modifier (a)
-  (member a +throw-modifiers+))
 
 (defclass majere-race ()
   ((%bonuses :initarg :bonuses
@@ -71,6 +42,14 @@
                    :accessor disadvantages
                    :initform ()
                    :type list)
+   (%immunities :initarg :immunities
+                :accessor immunities
+                :initform ()
+                :type list)
+   (%spells :initarg :spells
+            :accessor spells
+            :initform ()
+            :type list)
    (%armor :initarg :armor
            :accessor armor
            :initform ()
@@ -81,6 +60,24 @@
                :type list)))
 
 (defmacro define-race (name (&optional (parent-race 'majere-race)) &rest specs)
+  "Define a new race named NAME that inherits information from the PARENT-RACE.
+The passed SPECS are used to define how the PARENT-RACE's information is combined
+and transformed. The magic symbol :choose allows you to chooose a valid option from
+the types that are specified for the SPEC form.
+
+Defined SPEC forms:
+:bonuses       - Bonuses to saving throws (<stat> <amount>) | ((<stat> <amount>))
+:alignment     - Base alignment for the race, must be of type 'alignment' defined in type.lisp
+:size          - Base size for the race, must be of type 'size' defined in type.lisp
+:move-speed    - Integer that describes the base speed of the race
+:traits        - Traits the race provides  <trait> | (<trait>)
+:advantages    - The saving throws with advantage <damage type> | (<damage type>)
+:disadvantages - Saving throws with disadvantages <damage type> | (<damage type>)
+:immunities    - Damage types this race is immune to <damage type> | (<damage type>)
+:weapons       - Weapons the race has proficiency in <weapon> | (<weapon>)
+:tools         - Tools the race has proficiency in <tool> | (<tool>)
+:skill-checks  - Auto generic functions for skill rolls (<type> [<conditional>] &body body)
+TODO: Fill in event generics"
   ;; Make sure the parent is ready to be inspected
   (unless (closer-mop:class-finalized-p (find-class parent-race))
     (closer-mop:ensure-finalized (find-class parent-race)))
@@ -97,10 +94,11 @@
                               parent-element)))
              ;; TODO: Find a better way to do this
              (if (eq type 'alignment)
+                 `',element
                  ;; If we're already quoted don't double quote
-                 (if (and (listp element) (eq (first element) 'quote))
-                     element
-                     `',element)
+                 ;; (if (and (listp element) (eq (first element) 'quote))
+                 ;;     element
+                 ;;     `',element)
                  element)))
          ;; TODO: Fix so that it actually checks that things are alists.
          ;; Honestly this doesn't really make sure that things are alists so use
@@ -166,6 +164,7 @@
                                                           spec-element)))
                                    slot-type)))
                               parent-slots)))
+      (declare (ignore saving-throws skill-checks))
       `(progn
          (defclass ,name (,parent-race)
            ,(mapcar (lambda (slot-info)
@@ -175,8 +174,6 @@
                         :initform ,(fourth slot-info)
                         :type ,(fifth slot-info)))
              new-slots))
-         ,saving-throws
-         ,skill-checks
          ;; This will repeat the definitions of the default params but
          ;; I'm okay with that because it alows a person to call (make-instance '<class>)
          ;; and allow the convenience of (make-<class>) and still have the defaults

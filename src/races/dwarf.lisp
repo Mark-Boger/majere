@@ -24,22 +24,6 @@
              (:tools (:smith-tools
                       :brewer-supplies
                       :mason-tools))
-             ;; ALIST of the form (throw-type :advantage | :disadvantage | :immune)
-             (:saving-throws (:poison :advantage))
              ;; List of the form `'modifier type | (skill constraint function)`'
              (:skill-checks (:intelligence
                              (:history :stonework #'function))))
-
-(define-race hill-dwarf (dwarf)
-             ;; Same syntax as methods only the ((o hill-dwarf) is already supplied)
-             ;; so the generation will be something like
-             ;; (defmethod leve-up <:around | :before | :after>
-             ;;    ((object-name hill-dwarf) &rest args) &body)
-             (:level-up (object-name something)
-                        #'function)
-             (:bonuses (:wisdom 1)))
-
-(define-race mountain-dwarf (dwarf)
-             (:bonuses (:strength 2))
-             (:armor (:light
-                      :medium)))
